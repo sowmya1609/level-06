@@ -5,22 +5,16 @@ const app = require("../app");
 
 let server, agent;
 
-describe("Todo Application", function () {
+describe("Todo test suite", () => {
   beforeAll(async () => {
     await db.sequelize.sync({ force: true });
     server = app.listen(3000, () => {});
     agent = request.agent(server);
   });
-
   afterAll(async () => {
-    try {
-      await db.sequelize.close();
-      await server.close();
-    } catch (error) {
-      console.log(error);
-    }
+    await db.sequelize.close();
+    server.close();
   });
-
   test("Creates a todo and responds with json at /todos POST endpoint", async () => {
     const response = await agent.post("/todos").send({
       title: "Buy milk",
@@ -52,7 +46,6 @@ describe("Todo Application", function () {
     const parsedUpdateResponse = JSON.parse(markCompleteResponse.text);
     expect(parsedUpdateResponse.completed).toBe(true);
   });
-
   test("Fetches all todos in the database using /todos endpoint", async () => {
     await agent.post("/todos").send({
       title: "Buy xbox",
